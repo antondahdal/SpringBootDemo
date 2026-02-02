@@ -15,30 +15,36 @@ import com.mobile.ws.demo.module.response.UserRest;
 @RequestMapping("/users")
 public class UserController {
 
-    @GetMapping(path="/{userId}",produces = { "application/json", "application/xml" })
-    public UserRest getUser(@PathVariable String userId) {
-    	UserRest userRest = new UserRest();
-    	userRest.setFirstName("John");
-    	userRest.setLastName("Doe");
-    		userRest.setEmail("abcd@mail.com");
-    	return userRest;
-    }
-    
-    @GetMapping()
-    public String getUsers(@RequestParam(value="page",defaultValue = "1") int page,@RequestParam(value = "limit",defaultValue = "10") int limit) {
-        return "Users List +page 	" + page + " limit " + limit;
-    }
-    @PostMapping
-    public String createUser() {
-        return "usersCreated";
-    }
-   @PutMapping
-    public String updateUser() {
-        return "usersDetailsUpdated";
-    }
-    @DeleteMapping
-    public String deleteUser() {
-        return "usersDeleted";
-    }
-    
+	@GetMapping(path = "/{userId}", produces = { "application/json", "application/xml" })
+	public UserRest getUser(@PathVariable String userId) {
+		System.out.println("Get user details for userId: " + userId);
+		UserRest userRest = new UserRest();
+		userRest.setFirstName("John");
+		userRest.setLastName("Doe");
+		userRest.setEmail("abcd@mail.com");
+		userRest.setId(userId);
+		return userRest;
+	}
+
+	@GetMapping()
+	public String getUsers(@RequestParam(value = "page", defaultValue = "1") int page,
+			@RequestParam(value = "limit", defaultValue = "10") int limit) {
+		return "Users List +page 	" + page + " limit " + limit;
+	}
+
+	@PostMapping
+	public String createUser() {
+		return "usersCreated";
+	}
+
+	@PutMapping
+	public String updateUser() {
+		return "usersDetailsUpdated";
+	}
+
+	@DeleteMapping
+	public String deleteUser() {
+		return "usersDeleted";
+	}
+
 }
