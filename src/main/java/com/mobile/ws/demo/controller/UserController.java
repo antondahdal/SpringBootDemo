@@ -1,6 +1,8 @@
 package com.mobile.ws.demo.controller;
 
-import javax.swing.text.html.HTML;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,18 +19,21 @@ import org.springframework.web.bind.annotation.RestController;
 import com.mobile.ws.demo.module.request.userDetailsRequestModel;
 import com.mobile.ws.demo.module.response.UserRest;
 
+import jakarta.validation.Valid;
+
 @RestController
 @RequestMapping("/users")
 public class UserController {
+	Map<String, UserRest> users;
 
 	@GetMapping(path = "/{userId}", produces = { "application/json", "application/xml" })
 	public ResponseEntity<UserRest> getUser(@PathVariable String userId) {
 		System.out.println("Get user details for userId: " + userId);
-		UserRest userRest = new UserRest();
-		userRest.setFirstName("John");
-		userRest.setLastName("Doe");
-		userRest.setEmail("abcd@mail.com");
-		userRest.setId(userId);
+		UserRest userRest =users.get(userId);;
+		if(userRest != null) {
+			return new ResponseEntity<UserRest>(userRest,HttpStatus.OK);
+		}
+	
 		return new ResponseEntity<UserRest>(userRest,HttpStatus.NOT_FOUND);
 	}
 
@@ -41,10 +46,23 @@ public class UserController {
 	@PostMapping(
 			consumes = { "application/json", "application/xml" },
 			produces = { "application/json", "application/xml" })
-	public ResponseEntity<userDetailsRequestModel> createUser(@RequestBody userDetailsRequestModel userDetails) {
+	public ResponseEntity<UserRest> createUser(@Valid @RequestBody userDetailsRequestModel userDetails) {
+		if(users == null) users = new HashMap<>();
+		
+		UserRest tempUserRest = new UserRest();
+		String ID= UUID.randomUUID().toString();
+		tempUserRest.setFirstName(userDetails.getFirstName());
+		tempUserRest.setLastName(userDetails.getLastName());
+		tempUserRest.setEmail(userDetails.getEmail());
+		tempUserRest.setId(ID);
+		
+		if(!users.containsKey(userDetails.getId())) {
+			users.put(ID, tempUserRest) ;
+		}
 		System.out.println();
 		System.out.println("First Name: " + userDetails.getFirstName());
-		return new ResponseEntity<userDetailsRequestModel>(userDetails,HttpStatus.OK);
+		
+		return new ResponseEntity<UserRest>(tempUserRest,HttpStatus.OK);
 	}
 
 	@PutMapping
